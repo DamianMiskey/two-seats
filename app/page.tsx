@@ -1,6 +1,19 @@
 import Image from "next/image";
+import { client } from "../sanity/lib/client";
 
-const highlights = [
+type HomepageContent = {
+  title?: string;
+  tagline?: string;
+  description?: string;
+  contactEmail?: string;
+  highlights?: Array<{
+    _key?: string;
+    title?: string;
+    description?: string;
+  }>;
+};
+
+const fallbackHighlights = [
   {
     title: "Fresh launch",
     description: "A new and brighter experience is landing soon.",
@@ -15,7 +28,47 @@ const highlights = [
   },
 ];
 
-export default function Home() {
+const fallbackContent: HomepageContent = {
+  title: "We’re turning up the fun while we rebuild.",
+  tagline: "Maintenance mode",
+  description:
+    "Two Seats is getting a fresh coat of personality, speed, and sparkle. We’ll be back soon with something brighter.",
+  contactEmail: "info@twoseats.co.za",
+  highlights: fallbackHighlights,
+};
+
+function normalizeHighlights(highlights: HomepageContent["highlights"] = []) {
+  return highlights.map((item, index) => ({
+    ...item,
+    _key: item._key ?? `highlight-${index}-${item.title ?? "item"}`,
+  }));
+}
+
+async function getHomepageContent(): Promise<HomepageContent> {
+  try {
+    return await client.fetch<HomepageContent>(`*[_type == "homepage"][0]{
+      title,
+      tagline,
+      description,
+      contactEmail,
+      highlights[]{_key, title, description}
+    }`);
+  } catch (error) {
+    console.error("Failed to load homepage content from Sanity", error);
+    return fallbackContent;
+  }
+}
+
+export default async function Home() {
+  const content = (await getHomepageContent()) ?? fallbackContent;
+  const highlights = normalizeHighlights(
+    content.highlights?.length ? content.highlights : fallbackHighlights,
+  );
+  const title = content.title ?? fallbackContent.title;
+  const tagline = content.tagline ?? fallbackContent.tagline;
+  const description = content.description ?? fallbackContent.description;
+  const contactEmail = content.contactEmail ?? fallbackContent.contactEmail;
+
   return (
     <main className="min-h-screen bg-[var(--color-ink)] text-white">
       <section className="relative isolate min-h-screen overflow-hidden">
@@ -39,23 +92,20 @@ export default function Home() {
               </div>
 
               <p className="mb-5 inline-flex items-center rounded-full border border-white/30 bg-white/10 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.35em] text-white/90">
-                Maintenance mode
+                {tagline}
               </p>
 
               <h1 className="text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
-                We’re turning{" "}
-                <span className="text-[var(--color-accent)]">up the fun</span>{" "}
-                while we rebuild.
+                {title}
               </h1>
 
               <p className="mt-6 max-w-2xl text-lg leading-8 text-white/80 sm:text-xl">
-                Two Seats is getting a fresh coat of personality, speed, and
-                sparkle. We’ll be back soon with something brighter.
+                {description}
               </p>
 
               <div className="mt-8 flex flex-wrap gap-4">
                 <a
-                  href="mailto:info@twoseats.co.za"
+                  href={`mailto:${contactEmail}`}
                   className="rounded-full bg-[var(--color-accent)] px-6 py-3 font-semibold text-[var(--color-ink)] transition hover:opacity-90"
                 >
                   Contact us
@@ -87,7 +137,7 @@ export default function Home() {
               <div id="updates" className="mt-8 grid gap-4">
                 {highlights.map((item) => (
                   <div
-                    key={item.title}
+                    key={item._key}
                     className="rounded-2xl border border-white/15 bg-[var(--color-ink)]/55 p-4"
                   >
                     <h3 className="text-lg font-semibold text-white">

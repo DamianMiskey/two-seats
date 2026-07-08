@@ -47,8 +47,28 @@ npm run lint
 
 - app/page.tsx — the main landing page
 - app/globals.css — global styling
+- app/studio/[[...tool]]/page.tsx — the embedded Sanity Studio route
+- sanity/ — Sanity schema, config, and studio structure
 - public/ — static assets such as the logo
 - types/ — shared TypeScript types
+
+## Deploying to Vercel
+
+When you deploy this project to Vercel, the Sanity Studio will be available at your site’s /studio route.
+
+Make sure these environment variables are set in Vercel:
+
+```bash
+NEXT_PUBLIC_SANITY_PROJECT_ID=your_project_id
+NEXT_PUBLIC_SANITY_DATASET=your_dataset_name
+NEXT_PUBLIC_SANITY_API_VERSION=2026-07-08
+```
+
+Once the app is deployed, your main site will run normally and the Studio will be available at:
+
+```text
+https://your-domain.com/studio
+```
 
 ## Contact
 
