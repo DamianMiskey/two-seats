@@ -31,6 +31,12 @@ export const homepageType = defineType({
       validation: (Rule) => Rule.email(),
     }),
     defineField({
+      name: "highlightPhrase",
+      title: "Highlighted Phrase",
+      type: "string",
+      description: "Word or phrase to highlight in the homepage title from the CMS",
+    }),
+    defineField({
       name: "highlights",
       title: "Highlights",
       type: "array",

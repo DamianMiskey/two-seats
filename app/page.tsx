@@ -8,6 +8,7 @@ type HomepageContent = {
   tagline?: string;
   description?: string;
   contactEmail?: string;
+  highlightPhrase?: string;
   highlights?: Array<{
     _key?: string;
     title?: string;
@@ -36,6 +37,7 @@ const fallbackContent: HomepageContent = {
   description:
     "Two Seats is getting a fresh coat of personality, speed, and sparkle. We’ll be back soon with something brighter.",
   contactEmail: "info@twoseats.co.za",
+  highlightPhrase: "up the fun",
   highlights: fallbackHighlights,
 };
 
@@ -46,6 +48,38 @@ function normalizeHighlights(highlights: HomepageContent["highlights"] = []) {
   }));
 }
 
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function renderTitleWithHighlight(
+  title: string | undefined,
+  highlightPhrase?: string,
+) {
+  const safeTitle = title ?? fallbackContent.title ?? "";
+  const phrase = highlightPhrase?.trim();
+
+  if (!phrase) {
+    return safeTitle;
+  }
+
+  const parts = safeTitle.split(new RegExp(`(${escapeRegExp(phrase)})`, "i"));
+
+  if (parts.length <= 1) {
+    return safeTitle;
+  }
+
+  return parts.map((part, index) =>
+    index % 2 === 1 ? (
+      <span key={`${part}-${index}`} className="text-[var(--color-accent)]">
+        {part}
+      </span>
+    ) : (
+      <span key={`${part}-${index}`}>{part}</span>
+    ),
+  );
+}
+
 async function getHomepageContent(): Promise<HomepageContent> {
   try {
     const content =
@@ -54,6 +88,7 @@ async function getHomepageContent(): Promise<HomepageContent> {
       tagline,
       description,
       contactEmail,
+      highlightPhrase,
       highlights[]{_key, title, description}
     }`);
 
@@ -73,6 +108,8 @@ export default async function Home() {
   const tagline = content.tagline ?? fallbackContent.tagline;
   const description = content.description ?? fallbackContent.description;
   const contactEmail = content.contactEmail ?? fallbackContent.contactEmail;
+  const highlightPhrase =
+    content.highlightPhrase ?? fallbackContent.highlightPhrase;
 
   return (
     <main className="min-h-screen bg-[var(--color-ink)] text-white">
@@ -101,7 +138,7 @@ export default async function Home() {
               </p>
 
               <h1 className="text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
-                {title}
+                {renderTitleWithHighlight(title, highlightPhrase)}
               </h1>
 
               <p className="mt-6 max-w-2xl text-lg leading-8 text-white/80 sm:text-xl">
