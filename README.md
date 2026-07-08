@@ -1,38 +1,55 @@
-This is the Two Seats maintenance landing page project, a lightweight Next.js app built to present a polished, branded "under maintenance" experience for the Two Seats website.
+# Two Seats
 
-It is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+Two Seats is currently running a polished maintenance landing page while the full website experience is being rebuilt. This project presents a branded temporary experience with a clear contact call to action and a preview of what is coming next.
 
-## Getting Started
+## Current status
 
-First, run the development server:
+- The site is in a maintenance/coming-soon phase.
+- The homepage is live and styled as a modern, welcoming placeholder experience.
+- The focus is on refining branding, visuals, and messaging ahead of the full launch.
+
+## Stack
+
+This project is built with:
+
+- Next.js 16
+- React 19
+- TypeScript
+- Tailwind CSS
+- ESLint
+
+## Development
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Start the local development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000 to view the site locally.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Available scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run dev
+npm run build
+npm run start
+npm run lint
+```
 
-## Learn More
+## Project structure
 
-To learn more about Next.js, take a look at the following resources:
+- app/page.tsx — the main landing page
+- app/globals.css — global styling
+- public/ — static assets such as the logo
+- types/ — shared TypeScript types
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Contact
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+For questions or updates, reach out at info@twoseats.co.za
