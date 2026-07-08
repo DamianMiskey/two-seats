@@ -49,7 +49,7 @@ function normalizeHighlights(highlights: HomepageContent["highlights"] = []) {
 async function getHomepageContent(): Promise<HomepageContent> {
   try {
     const content =
-      await client.fetch<HomepageContent | null>(`*[_type == "homepage"][0]{
+      await client.fetch<HomepageContent | null>(`*[_type == "homepage" && _id == "homepage"][0]{
       title,
       tagline,
       description,
