@@ -48,13 +48,16 @@ function normalizeHighlights(highlights: HomepageContent["highlights"] = []) {
 
 async function getHomepageContent(): Promise<HomepageContent> {
   try {
-    return await client.fetch<HomepageContent>(`*[_type == "homepage"][0]{
+    const content =
+      await client.fetch<HomepageContent | null>(`*[_type == "homepage"][0]{
       title,
       tagline,
       description,
       contactEmail,
       highlights[]{_key, title, description}
     }`);
+
+    return content ?? fallbackContent;
   } catch (error) {
     console.error("Failed to load homepage content from Sanity", error);
     return fallbackContent;
