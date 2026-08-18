@@ -1,21 +1,23 @@
 # Two Seats
 
-Two Seats is currently running a polished maintenance landing page while the full website experience is being rebuilt. This project presents a branded temporary experience with a clear contact call to action and a preview of what is coming next.
+The Two Seats marketing homepage — a full agency site (nav, hero, services, work, approach, testimonials, contact, footer) with GSAP scroll-reveal animations, built on the Two Seats Style Guide.
 
 ## Current status
 
-- The site is in a maintenance/coming-soon phase.
-- The homepage is live and styled as a modern, welcoming placeholder experience.
-- The focus is on refining branding, visuals, and messaging ahead of the full launch.
+- The homepage is a real, multi-section site — no longer in "maintenance mode."
+- See `context/progress.md` for what's placeholder vs. production-ready, and `context/architecture.md` / `context/brand.md` before extending it.
+- Hero copy is currently served from a local fallback, not the live Sanity document — see `context/progress.md` for why and how to reconnect it before launch.
 
 ## Stack
 
 This project is built with:
 
-- Next.js 16
+- Next.js 16 (App Router)
 - React 19
 - TypeScript
-- Tailwind CSS
+- Tailwind CSS v4
+- GSAP + `@gsap/react` (scroll-triggered reveal animations)
+- Sanity CMS
 - ESLint
 
 ## Development
@@ -45,12 +47,16 @@ npm run lint
 
 ## Project structure
 
-- app/page.tsx — the main landing page
-- app/globals.css — global styling
+- app/page.tsx — composes the homepage sections
+- app/globals.css — brand color tokens, font wiring, global styles
 - app/studio/[[...tool]]/page.tsx — the embedded Sanity Studio route
+- components/ — nav, hero, sections, footer, GSAP motion primitives, shared UI primitives (see `context/architecture.md`)
+- lib/sanity/ — homepage content fetch + fallback copy
 - sanity/ — Sanity schema, config, and studio structure
+- next.config.ts — security headers (CSP, HSTS, etc.) — see `context/security.md`
+- context/ — living architecture/brand/progress docs, read this before extending the site
 - public/ — static assets such as the logo
-- types/ — shared TypeScript types
+- types/ — regenerated automatically by `next dev`/`next build` (typedRoutes + cacheLife codegen); not hand-written, not tracked in git, excluded from lint
 
 ## Deploying to Vercel
 

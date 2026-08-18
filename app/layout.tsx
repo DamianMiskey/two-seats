@@ -11,9 +11,21 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  title: "Two Seats | Maintenance",
+  title: "Two Seats | Connect. Create. Collaborate.",
   description:
-    "A polished maintenance landing page for Two Seats with a bold, modern brand feel.",
+    "Two Seats is a small studio partnering with ambitious teams on brand, digital, and product work — from first idea to shipped experience.",
+  openGraph: {
+    title: "Two Seats | Connect. Create. Collaborate.",
+    description:
+      "Two Seats is a small studio partnering with ambitious teams on brand, digital, and product work — from first idea to shipped experience.",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Two Seats | Connect. Create. Collaborate.",
+    description:
+      "Two Seats is a small studio partnering with ambitious teams on brand, digital, and product work — from first idea to shipped experience.",
+  },
 };
 
 export default function RootLayout({
