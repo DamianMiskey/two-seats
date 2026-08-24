@@ -8,19 +8,19 @@ const steps = [
     number: "01",
     title: "Connect",
     description:
-      "We start by listening — understanding your goals, your audience, and what success looks like.",
+      "We start by listening — understanding your business, your goals and the challenges you're facing.",
   },
   {
     number: "02",
     title: "Create",
     description:
-      "We design and build with intent, iterating quickly and keeping you close to the process.",
+      "We give you a clear, jargon-free plan: practical recommendations, prioritised by impact, not upsold on what you don't need.",
   },
   {
     number: "03",
     title: "Collaborate",
     description:
-      "We ship together, hand off cleanly, and stay in the loop for whatever comes next.",
+      "We stay close as an ongoing partner — monitoring, maintaining and improving your website so you can focus on running your business.",
   },
 ];
 
@@ -31,7 +31,7 @@ export function Approach() {
         <SectionHeading
           eyebrow="How we work"
           title="Connect. Create. Collaborate."
-          subtitle="Three words that guide every project, from kickoff to launch."
+          subtitle="Three words that guide every website we look after, from first audit to ongoing care."
         />
       </Reveal>
 

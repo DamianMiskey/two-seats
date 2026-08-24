@@ -19,14 +19,14 @@ Source: `Two Seats Style Guide.pdf` (repo root). Facts here are extracted from t
 | `--color-grey` | `#c6c6c6` | 30% black from the guide — muted text, borders, not for full-bleed backgrounds |
 | `--color-mist` | `#f5f5f4` | **Not in the style guide.** Added as an opaque near-white wash for alternating light section backgrounds (see the `bg-grey/10` gotcha in `architecture.md`) — use this instead of an alpha-opacity grey when a section needs a light-but-not-pure-white background. |
 
-**Usage rule from the guide:** ink/white are dominant. Pair in exactly **one** secondary color (blue), plus the green primary, plus coral used sparingly — not an even rotation across all colors. Concretely: emerald is the workhorse accent everywhere; blue shows up specifically in Work/Approach for depth; coral appears only in the hero's highlighted phrase plus at most one more small accent point.
+**Usage rule from the guide:** ink/white are dominant. Pair in exactly **one** secondary color (blue), plus the green primary, plus coral used sparingly — not an even rotation across all colors. Concretely: emerald is the workhorse accent everywhere; blue shows up specifically in the `Hero`/`PageHero` background gradient for depth; coral appears only in the homepage hero's highlighted phrase plus at most one more small accent point.
 
 ## Typography
 
 **Montserrat**, loaded via `next/font/google` in `app/layout.tsx` (weights 300–800), exposed as `--font-montserrat` → Tailwind's `--font-sans`. Type scale is defined once in `components/ui/SectionHeading.tsx` and should be reused rather than re-specified per section:
 
 - Eyebrow: `text-xs sm:text-sm uppercase tracking-[0.3em]`
-- H1 (hero only): `text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight`
+- H1 (hero only): `text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight`
 - H2 (section titles): `text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight`
 - H3 (card titles): `text-xl sm:text-2xl font-semibold`
 - Body: `text-base sm:text-lg leading-7 sm:leading-8`

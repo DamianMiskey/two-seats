@@ -1,10 +1,10 @@
 # Two Seats
 
-The Two Seats marketing homepage — a full agency site (nav, hero, services, work, approach, testimonials, contact, footer) with GSAP scroll-reveal animations, built on the Two Seats Style Guide.
+The Two Seats marketing site — four pages (home, about, services, contact) covering website audits, care & security plans, and website improvements for small/medium businesses, with GSAP scroll-reveal animations, built on the Two Seats Style Guide.
 
 ## Current status
 
-- The homepage is a real, multi-section site — no longer in "maintenance mode."
+- A real, multi-page site — no longer in "maintenance mode," and no longer a single scrolling homepage.
 - See `context/progress.md` for what's placeholder vs. production-ready, and `context/architecture.md` / `context/brand.md` before extending it.
 - Hero copy is currently served from a local fallback, not the live Sanity document — see `context/progress.md` for why and how to reconnect it before launch.
 
@@ -47,11 +47,12 @@ npm run lint
 
 ## Project structure
 
-- app/page.tsx — composes the homepage sections
+- app/page.tsx, app/about/, app/services/, app/contact/ — the four routes, each composing shared components (see `context/architecture.md`)
 - app/globals.css — brand color tokens, font wiring, global styles
 - app/studio/[[...tool]]/page.tsx — the embedded Sanity Studio route
 - components/ — nav, hero, sections, footer, GSAP motion primitives, shared UI primitives (see `context/architecture.md`)
-- lib/sanity/ — homepage content fetch + fallback copy
+- lib/sanity/ — homepage hero content fetch + fallback copy
+- lib/content/ — static service content shared across the home/services/about pages
 - sanity/ — Sanity schema, config, and studio structure
 - next.config.ts — security headers (CSP, HSTS, etc.) — see `context/security.md`
 - context/ — living architecture/brand/progress docs, read this before extending the site

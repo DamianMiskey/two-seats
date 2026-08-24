@@ -10,21 +10,22 @@ const montserrat = Montserrat({
   weight: ["300", "400", "500", "600", "700", "800"],
 });
 
+const siteTitle = "Two Seats | Website Audits, Care & Cybersecurity";
+const siteDescription =
+  "Two Seats helps small and medium-sized businesses keep their websites secure, performing at their best and delivering better experiences for their customers.";
+
 export const metadata: Metadata = {
-  title: "Two Seats | Connect. Create. Collaborate.",
-  description:
-    "Two Seats is a small studio partnering with ambitious teams on brand, digital, and product work — from first idea to shipped experience.",
+  title: siteTitle,
+  description: siteDescription,
   openGraph: {
-    title: "Two Seats | Connect. Create. Collaborate.",
-    description:
-      "Two Seats is a small studio partnering with ambitious teams on brand, digital, and product work — from first idea to shipped experience.",
+    title: siteTitle,
+    description: siteDescription,
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Two Seats | Connect. Create. Collaborate.",
-    description:
-      "Two Seats is a small studio partnering with ambitious teams on brand, digital, and product work — from first idea to shipped experience.",
+    title: siteTitle,
+    description: siteDescription,
   },
 };
 

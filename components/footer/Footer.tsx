@@ -1,11 +1,11 @@
 import Image from "next/image";
+import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 
 const links = [
-  { href: "#services", label: "Services" },
-  { href: "#work", label: "Work" },
-  { href: "#approach", label: "Approach" },
-  { href: "#contact", label: "Contact" },
+  { href: "/services", label: "Services" },
+  { href: "/about", label: "About" },
+  { href: "/contact", label: "Contact" },
 ];
 
 export function Footer() {
@@ -25,13 +25,13 @@ export function Footer() {
 
           <nav className="flex flex-wrap gap-6">
             {links.map((link) => (
-              <a
+              <Link
                 key={link.href}
                 href={link.href}
                 className="text-sm font-semibold text-white/70 transition hover:text-white"
               >
                 {link.label}
-              </a>
+              </Link>
             ))}
           </nav>
         </div>

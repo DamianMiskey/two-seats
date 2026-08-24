@@ -6,30 +6,41 @@ Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS v4 (CSS-first config
 
 ## Route structure
 
-Single public route: `app/page.tsx`. It's a thin async Server Component that fetches homepage content and composes section components in order. `app/layout.tsx` holds the root `<html>`/`<body>`, font loading (Montserrat via `next/font/google`), and metadata. `app/studio/[[...tool]]/page.tsx` is the embedded Sanity Studio, statically rendered, kept isolated from the marketing site's CSP (see `security.md`).
+Four public routes, all sharing `Nav`/`Footer`: `app/page.tsx` (home), `app/about/page.tsx`, `app/services/page.tsx`, `app/contact/page.tsx`. Each page is a thin (async where it fetches content) Server Component that composes section/`ui` components in order — same pattern as the homepage, just repeated per route. `app/layout.tsx` holds the root `<html>`/`<body>`, font loading (Montserrat via `next/font/google`), and metadata. `app/studio/[[...tool]]/page.tsx` is the embedded Sanity Studio, statically rendered, kept isolated from the marketing site's CSP (see `security.md`).
+
+Internal nav links (`Nav`, `Footer`) use `next/link`'s `<Link>` to real routes (`/services`, `/about`, `/contact`), not `#hash` anchors — the site is no longer a single scrolling page. The one exception is `app/services/page.tsx`, which still uses `#`-hash anchors (via plain `<a>`) to jump between its own in-page service sections, and `Services`/`Hero` link to `/services#<id>` to deep-link a specific service.
 
 ## Component structure
 
 ```
 components/
-  nav/Nav.tsx              client — sticky header, scroll shadow, mobile menu
-  hero/Hero.tsx             client — GSAP entrance timeline
-  sections/                 server — Services, Work, Approach, Testimonials, Contact
+  nav/Nav.tsx              client — sticky header, scroll shadow, mobile menu, routes to /services /about /contact
+  hero/Hero.tsx             client — GSAP entrance timeline (homepage only)
+  sections/                 server — Services (homepage teaser grid), Approach, Contact (homepage CTA band)
+    ServiceSection.tsx       server — one full service's content block, used per-service on /services
+    ContactForm.tsx           client — the /contact page's enquiry form (builds a mailto: on submit)
   footer/Footer.tsx         server — static
   motion/
     gsap.ts                 client — single gsap + ScrollTrigger registration point
     Reveal.tsx               client — single-element scroll-in wrapper
     RevealGroup.tsx           client — staggers direct children on scroll-in
   ui/
-    Container.tsx, Section.tsx, SectionHeading.tsx, Button.tsx, Card.tsx
+    Container.tsx, Section.tsx, SectionHeading.tsx, Button.tsx, Card.tsx, Checklist.tsx
+    PageHero.tsx              server — the gradient hero banner used atop /about, /services, /contact (homepage keeps its own animated `Hero`)
 lib/sanity/
   getHomepageContent.ts     server-only fetch + fallback
   homepage-fallback.ts      fallback/local copy + HomepageContent type
+lib/content/
+  services.ts               static data — the four `Service` entries shared by the homepage teaser, /services, and /about
 ```
 
-**Server/Client rule:** default to Server Components. Only components that touch refs, browser APIs, or GSAP need `"use client"` — currently `Nav`, `Hero`, and everything under `components/motion/`. Every section component (`Services`, `Work`, `Approach`, `Testimonials`, `Contact`, `Footer`) stays a Server Component and just renders `<Reveal>`/`<RevealGroup>` (client components) as children — this is fully supported in the App Router and keeps the vast majority of the page's markup server-rendered.
+**Server/Client rule:** default to Server Components. Only components that touch refs, browser APIs, form state, or GSAP need `"use client"` — currently `Nav`, `Hero`, `ContactForm`, and everything under `components/motion/`. Every section/page component otherwise stays a Server Component and just renders `<Reveal>`/`<RevealGroup>` (client components) as children — this is fully supported in the App Router and keeps the vast majority of each page's markup server-rendered.
 
-**To add a new section:** create a Server Component in `components/sections/`, build it from the `ui/` primitives (`Section` for the wrapper + vertical rhythm, `SectionHeading` for the eyebrow/title/subtitle, `Card`/`Button` for content), wrap the content you want animated in `<Reveal>` or `<RevealGroup>`, then import and render it from `app/page.tsx` in the position you want.
+**`Button` renders `<a>` or `<button>`:** `components/ui/Button.tsx` is a discriminated union on `href` — pass `href` for a link-styled-as-button (used for every CTA that navigates, e.g. `/contact`), omit it and the component renders a real `<button type="submit">`-capable element (used by `ContactForm`'s submit button). Both share the same `variantClasses`/sizing so they're visually identical.
+
+**To add a new section:** create a Server Component in `components/sections/`, build it from the `ui/` primitives (`Section` for the wrapper + vertical rhythm, `SectionHeading` for the eyebrow/title/subtitle, `Card`/`Button`/`Checklist` for content), wrap the content you want animated in `<Reveal>` or `<RevealGroup>`, then import and render it from the relevant `app/**/page.tsx` in the position you want.
+
+**To add a new page/route:** create `app/<route>/page.tsx` following the existing pages as a template — render `Nav`, a `PageHero` (or the homepage's `Hero` if it needs the GSAP entrance timeline), your section components, then `Footer`. `Nav`/`Footer` are already route-agnostic.
 
 ## GSAP pattern
 
@@ -55,10 +66,13 @@ Shared primitives (`ui/Button.tsx`, `ui/Card.tsx`, `ui/Section.tsx`, `ui/Section
 
 ## Content
 
-Homepage content is typed as `HomepageContent` (`lib/sanity/homepage-fallback.ts`) — `title`, `tagline`, `description`, `contactEmail`, `highlightPhrase`, `highlights[]`. It's meant to be Sanity-driven (schema: `sanity/schemaTypes/homepageType.ts`) but is currently served from a local fallback — see `progress.md` for why and how to re-enable the live fetch. All other section content (Services, Work, Approach, Testimonials) is static placeholder copy written directly in the section components — there's no CMS schema for these yet.
+Homepage hero content is typed as `HomepageContent` (`lib/sanity/homepage-fallback.ts`) — `title`, `tagline`, `description`, `contactEmail`, `highlightPhrase`, `highlights[]` (each highlight now optionally carries an `href`, e.g. to deep-link `/services#care-plan`). It's meant to be Sanity-driven (schema: `sanity/schemaTypes/homepageType.ts`) but is currently served from a local fallback — see `progress.md` for why and how to re-enable the live fetch. `/contact` also reads `contactEmail` off the same fetch (falling back to `fallbackContent.contactEmail`) to build its mailto.
+
+Service content lives in one place, `lib/content/services.ts`, typed as `Service[]` — each entry has an `id` (used as the section anchor / hash), `title`, `kicker`, `teaser` (homepage card copy), optional `aboutBlurb` (only services with one show up in the About page's "core services" grid), `intro` paragraphs, a `whatsIncluded` checklist, an optional `secondaryList` and `tiers`, and a `closing` CTA block. This one array feeds the homepage `Services` teaser grid, every section on `/services` (via `ServiceSection`), and `/about`'s core-services grid — edit copy there rather than in the page/section components. There's no CMS schema for this yet; Approach's three steps and Contact's copy remain hand-written in their components too.
 
 ## Extending this later
 
 - New sections: follow the pattern above.
 - New CMS-driven sections: add fields/document types to `sanity/schemaTypes/`, extend `HomepageContent` (or add a new fetch function) in `lib/sanity/`, thread the data into the relevant section component as props — same shape as `Hero` receiving `content`.
-- New pages/routes: this is currently a single-route site; a second route just needs its own `app/<route>/page.tsx` composing the same `components/` — the `Nav`/`Footer` are already route-agnostic.
+- New service entries: add an object to `services` in `lib/content/services.ts` — it automatically appears on the homepage, `/services`, and (if given an `aboutBlurb`) `/about`.
+- New pages/routes: create `app/<route>/page.tsx` composing the shared `components/` — see "To add a new page/route" above.

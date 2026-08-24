@@ -1,14 +1,14 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
 
 const links = [
-  { href: "#services", label: "Services" },
-  { href: "#work", label: "Work" },
-  { href: "#approach", label: "Approach" },
-  { href: "#contact", label: "Contact" },
+  { href: "/services", label: "Services" },
+  { href: "/about", label: "About" },
+  { href: "/contact", label: "Contact" },
 ];
 
 export function Nav() {
@@ -29,7 +29,7 @@ export function Nav() {
       }`}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 sm:px-10 lg:px-16">
-        <a href="#top" className="flex items-center" onClick={() => setOpen(false)}>
+        <Link href="/" className="flex items-center" onClick={() => setOpen(false)}>
           <Image
             src="/two-seats-logo.jpg"
             alt="Two Seats"
@@ -38,19 +38,19 @@ export function Nav() {
             priority
             className="h-10 w-auto sm:h-12"
           />
-        </a>
+        </Link>
 
         <nav className="hidden items-center gap-8 md:flex">
           {links.map((link) => (
-            <a
+            <Link
               key={link.href}
               href={link.href}
               className="text-sm font-semibold text-ink/70 transition hover:text-ink"
             >
               {link.label}
-            </a>
+            </Link>
           ))}
-          <Button href="#contact" variant="primary" className="px-5 py-2.5">
+          <Button href="/contact" variant="primary" className="px-5 py-2.5">
             Let&apos;s talk
           </Button>
         </nav>
@@ -78,17 +78,17 @@ export function Nav() {
       {open ? (
         <nav className="flex flex-col gap-1 border-t border-ink/10 bg-white px-6 py-4 md:hidden">
           {links.map((link) => (
-            <a
+            <Link
               key={link.href}
               href={link.href}
               onClick={() => setOpen(false)}
               className="rounded-lg px-2 py-3 text-sm font-semibold text-ink/80 transition hover:bg-ink/5"
             >
               {link.label}
-            </a>
+            </Link>
           ))}
           <Button
-            href="#contact"
+            href="/contact"
             variant="primary"
             className="mt-2"
             onClick={() => setOpen(false)}

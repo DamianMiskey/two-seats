@@ -8,30 +8,31 @@ export type HomepageContent = {
     _key?: string;
     title?: string;
     description?: string;
+    href?: string;
   }>;
 };
 
 export const fallbackHighlights = [
   {
-    title: "Senior team, start to finish",
-    description: "No hand-offs, no juniors learning on your budget.",
+    title: "Website Audits",
+    href: "/services#website-audit",
   },
   {
-    title: "Strategy before pixels",
-    description: "Every build starts with a plan, not a moodboard.",
+    title: "Website Care & Security",
+    href: "/services#care-plan",
   },
   {
-    title: "Built to ship",
-    description: "We measure success by what goes live, not the deck.",
+    title: "Website Improvements",
+    href: "/services#improvements",
   },
 ];
 
 export const fallbackContent: HomepageContent = {
-  title: "Brand and product work that actually moves the needle.",
+  title: "Keeping your website secure, fast and working for your customers.",
   tagline: "Connect | Create | Collaborate",
   description:
-    "Two Seats is a small, senior studio for teams who want their brand and digital work to feel considered, not templated. Strategy, design, and build — handled end-to-end, by the same people who pitched it.",
+    "Better websites start with better conversations — one seat for you, one seat for us.",
   contactEmail: "info@twoseats.co.za",
-  highlightPhrase: "actually moves the needle",
+  highlightPhrase: "secure",
   highlights: fallbackHighlights,
 };

@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import Link from "next/link";
 import { useGSAP } from "@gsap/react";
 import { gsap, SplitText } from "@/components/motion/gsap";
 import { Button } from "@/components/ui/Button";
@@ -149,7 +150,7 @@ export function Hero({ content }: Readonly<HeroProps>) {
 
         <h1
           ref={headingRef}
-          className="max-w-4xl text-4xl font-bold leading-tight tracking-tight sm:text-6xl lg:text-7xl"
+          className="max-w-4xl text-3xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl"
         >
           {renderTitleWithHighlight(title, content.highlightPhrase)}
         </h1>
@@ -169,14 +170,24 @@ export function Hero({ content }: Readonly<HeroProps>) {
 
         {highlights.length ? (
           <div data-hero-post className="flex flex-wrap gap-3 pt-4">
-            {highlights.map((item) => (
-              <div
-                key={item._key ?? item.title}
-                className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm text-white/80"
-              >
-                <span className="font-semibold text-white">{item.title}</span>
-              </div>
-            ))}
+            {highlights.map((item) =>
+              item.href ? (
+                <Link
+                  key={item._key ?? item.title}
+                  href={item.href}
+                  className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-white/80 transition hover:border-white/30 hover:bg-white/10 hover:text-white"
+                >
+                  {item.title}
+                </Link>
+              ) : (
+                <div
+                  key={item._key ?? item.title}
+                  className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm text-white/80"
+                >
+                  <span className="font-semibold text-white">{item.title}</span>
+                </div>
+              ),
+            )}
           </div>
         ) : null}
       </div>

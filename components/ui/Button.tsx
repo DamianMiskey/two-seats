@@ -1,10 +1,20 @@
-import type { AnchorHTMLAttributes } from "react";
+import type { AnchorHTMLAttributes, ButtonHTMLAttributes } from "react";
 
-type ButtonProps = AnchorHTMLAttributes<HTMLAnchorElement> & {
-  variant?: "primary" | "outline" | "outline-light";
+type Variant = "primary" | "outline" | "outline-light";
+
+type ButtonAsAnchor = AnchorHTMLAttributes<HTMLAnchorElement> & {
+  variant?: Variant;
+  href: string;
 };
 
-const variantClasses: Record<NonNullable<ButtonProps["variant"]>, string> = {
+type ButtonAsButton = ButtonHTMLAttributes<HTMLButtonElement> & {
+  variant?: Variant;
+  href?: undefined;
+};
+
+type ButtonProps = ButtonAsAnchor | ButtonAsButton;
+
+const variantClasses: Record<Variant, string> = {
   primary:
     "bg-emerald text-ink hover:opacity-90",
   outline:
@@ -13,18 +23,22 @@ const variantClasses: Record<NonNullable<ButtonProps["variant"]>, string> = {
     "border border-white/40 text-white hover:bg-white/10",
 };
 
-export function Button({
-  variant = "primary",
-  className = "",
-  children,
-  ...props
-}: ButtonProps) {
+export function Button({ variant = "primary", className = "", children, ...props }: ButtonProps) {
+  const classes = `inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-semibold transition sm:text-base ${variantClasses[variant]} ${className}`;
+
+  if (props.href) {
+    return (
+      <a {...(props as AnchorHTMLAttributes<HTMLAnchorElement>)} className={classes}>
+        {children}
+      </a>
+    );
+  }
+
+  const { type = "button", ...buttonProps } = props as ButtonHTMLAttributes<HTMLButtonElement>;
+
   return (
-    <a
-      {...props}
-      className={`inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-semibold transition sm:text-base ${variantClasses[variant]} ${className}`}
-    >
+    <button {...buttonProps} type={type} className={classes}>
       {children}
-    </a>
+    </button>
   );
 }
