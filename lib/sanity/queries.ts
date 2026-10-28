@@ -24,13 +24,13 @@ export const HOME_QUERY = defineQuery(`*[_id == "homePage"][0]{
   ${seo}
 }`);
 
-export const SERVICES_QUERY = defineQuery(`*[_type == "service" && defined(slug.current)] | order(order asc){
+export const SERVICES_QUERY = defineQuery(`*[_type == "service" && defined(slug.current)] | order(orderRank asc){
   _id, title, "slug": slug.current, shortLabel, kicker, teaser, aboutBlurb, icon,
   headline, intro, whatsIncluded, secondaryList{ title, items }, showCarePlans,
   closing{ heading, body }, ctaLabel
 }`);
 
-export const CARE_PLANS_QUERY = defineQuery(`*[_type == "carePlan"] | order(order asc){
+export const CARE_PLANS_QUERY = defineQuery(`*[_type == "carePlan"] | order(orderRank asc){
   _id, name, description, priceFrom, pricePeriod, featured, badge
 }`);
 

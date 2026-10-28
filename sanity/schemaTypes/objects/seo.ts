@@ -1,5 +1,6 @@
 import { SearchIcon } from "@sanity/icons/Search";
 import { defineField, defineType } from "sanity";
+import { SeoInput } from "../../studio/SeoInput";
 
 // What search engines and link previews show for a page.
 export const seoType = defineType({
@@ -8,6 +9,8 @@ export const seoType = defineType({
   type: "object",
   icon: SearchIcon,
   options: { collapsible: true, collapsed: true },
+  // Live Google and WhatsApp previews under the fields.
+  components: { input: SeoInput },
   fields: [
     defineField({ name: "title", type: "string", description: "Shown in the browser tab and Google results. About 50–60 characters.", validation: (rule) => rule.max(70).warning("Google usually cuts titles after about 60 characters.") }),
     defineField({ name: "description", type: "text", rows: 3, description: "Shown under the title in Google. About 150 characters.", validation: (rule) => rule.max(170).warning("Google usually cuts descriptions after about 160 characters.") }),

@@ -12,7 +12,9 @@ import { apiVersion, dataset, projectId } from "./sanity/env";
 import { resolve } from "./sanity/presentation";
 import { schema, SINGLETON_TYPES } from "./sanity/schemaTypes";
 import { structure } from "./sanity/structure";
-import { Layout, Logo, TwoSeatsMark } from "./sanity/studio/Brand";
+import { Layout, Logo, Navbar, ToolMenu, TwoSeatsMark } from "./sanity/studio/Brand";
+import { ViewOnSiteAction } from "./sanity/studio/ViewOnSiteAction";
+import { welcomeTool } from "./sanity/studio/Welcome";
 import { twoSeatsTheme } from "./sanity/studio/theme";
 
 // Where the Presentation tool loads the site from. Set
@@ -25,7 +27,7 @@ export default defineConfig({
   // Brand colours, font and logo (see sanity/studio/).
   theme: twoSeatsTheme,
   icon: () => <TwoSeatsMark size={26} />,
-  studio: { components: { logo: Logo, layout: Layout } },
+  studio: { components: { logo: Logo, layout: Layout, navbar: Navbar, toolMenu: ToolMenu } },
   projectId,
   dataset,
   plugins: [
@@ -38,9 +40,11 @@ export default defineConfig({
     // GROQ playground, for trying queries. Shown to administrators only.
     visionTool({ defaultApiVersion: apiVersion }),
   ],
-  // Only administrators see Vision; editors get Structure and Presentation.
-  tools: (tools, { currentUser }) =>
-    currentUser?.roles.some((r) => r.name === "administrator") ? tools : tools.filter((t) => t.name !== "vision"),
+  // A welcome dashboard first; Vision only for administrators.
+  tools: (tools, { currentUser }) => {
+    const isAdmin = currentUser?.roles.some((r) => r.name === "administrator");
+    return [welcomeTool, ...(isAdmin ? tools : tools.filter((t) => t.name !== "vision"))];
+  },
   schema: {
     types: schema.types,
     // Singletons can't be created from the "new document" menu…
@@ -48,10 +52,12 @@ export default defineConfig({
   },
   document: {
     // …nor duplicated or deleted.
-    actions: (actions, { schemaType }) =>
-      SINGLETON_TYPES.has(schemaType)
+    actions: (actions, { schemaType }) => [
+      ...(SINGLETON_TYPES.has(schemaType)
         ? actions.filter(({ action }) => action && ["publish", "discardChanges", "restore"].includes(action))
-        : actions,
+        : actions),
+      ViewOnSiteAction,
+    ],
     newDocumentOptions: (items) => items.filter((item) => !SINGLETON_TYPES.has(item.templateId)),
   },
 });

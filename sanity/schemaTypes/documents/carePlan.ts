@@ -1,4 +1,5 @@
 import { HeartIcon } from "@sanity/icons/Heart";
+import { orderRankField, orderRankOrdering } from "@sanity/orderable-document-list";
 import { defineField, defineType } from "sanity";
 
 // A website care plan tier (Starter, Growth, Premium…).
@@ -14,9 +15,9 @@ export const carePlanType = defineType({
     defineField({ name: "pricePeriod", title: "Billed", type: "string", options: { list: [{ title: "Per month", value: "month" }, { title: "Once-off", value: "once" }], layout: "radio", direction: "horizontal" }, initialValue: "month" }),
     defineField({ name: "featured", title: "Highlight this plan", type: "boolean", initialValue: false }),
     defineField({ name: "badge", type: "string", description: "Small label on a highlighted plan, e.g. \"Most popular\".", hidden: ({ parent }) => !parent?.featured, validation: (rule) => rule.max(20) }),
-    defineField({ name: "order", type: "number", initialValue: 10 }),
+    orderRankField({ type: "carePlan" }),
   ],
-  orderings: [{ title: "Display order", name: "orderAsc", by: [{ field: "order", direction: "asc" }] }],
+  orderings: [orderRankOrdering],
   preview: {
     select: { title: "name", price: "priceFrom", featured: "featured" },
     prepare: ({ title, price, featured }) => ({ title: `${title}${featured ? " ★" : ""}`, subtitle: price ? `From R${price}` : "Price on request" }),

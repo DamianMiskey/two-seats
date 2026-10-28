@@ -5,6 +5,7 @@ import { HeartIcon } from "@sanity/icons/Heart";
 import { HomeIcon } from "@sanity/icons/Home";
 import { UserIcon } from "@sanity/icons/User";
 import { UsersIcon } from "@sanity/icons/Users";
+import { orderableDocumentListDeskItem } from "@sanity/orderable-document-list";
 import type { StructureResolver } from "sanity/structure";
 
 // The Studio's sidebar. Pages and settings are singletons: one fixed document
@@ -12,7 +13,7 @@ import type { StructureResolver } from "sanity/structure";
 const singleton = (S: Parameters<StructureResolver>[0], type: string, title: string, icon: typeof HomeIcon) =>
   S.listItem().title(title).id(type).icon(icon).child(S.document().schemaType(type).documentId(type).title(title));
 
-export const structure: StructureResolver = (S) =>
+export const structure: StructureResolver = (S, context) =>
   S.list()
     .title("Two Seats")
     .items([
@@ -30,8 +31,9 @@ export const structure: StructureResolver = (S) =>
             ]),
         ),
       S.divider(),
-      S.documentTypeListItem("service").title("Services").icon(CaseIcon),
-      S.documentTypeListItem("carePlan").title("Care plans").icon(HeartIcon),
+      // Drag-and-drop lists: the order here is the order on the website.
+      orderableDocumentListDeskItem({ type: "service", title: "Services", icon: CaseIcon, S, context }),
+      orderableDocumentListDeskItem({ type: "carePlan", title: "Care plans", icon: HeartIcon, S, context }),
       S.documentTypeListItem("person").title("Team").icon(UserIcon),
       S.divider(),
       singleton(S, "siteSettings", "Site settings", CogIcon),

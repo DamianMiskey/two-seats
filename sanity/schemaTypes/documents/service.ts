@@ -1,4 +1,5 @@
 import { CaseIcon } from "@sanity/icons/Case";
+import { orderRankField, orderRankOrdering } from "@sanity/orderable-document-list";
 import { defineArrayMember, defineField, defineType } from "sanity";
 
 export const SERVICE_ICONS = [
@@ -8,7 +9,8 @@ export const SERVICE_ICONS = [
   { title: "Arrow up (improvements)", value: "trend" },
 ];
 
-// One service Two Seats offers. Order controls where it appears everywhere.
+// One service Two Seats offers. Drag services in the Studio list to reorder
+// them everywhere on the site (stored in orderRank).
 export const serviceType = defineType({
   name: "service",
   title: "Service",
@@ -35,7 +37,7 @@ export const serviceType = defineType({
     defineField({ name: "teaser", type: "text", rows: 3, group: "summary", description: "One or two sentences for service cards.", validation: (rule) => rule.required().max(220) }),
     defineField({ name: "aboutBlurb", title: "About page blurb", type: "text", rows: 3, group: "summary", description: "Leave empty to keep this service off the About page." }),
     defineField({ name: "icon", type: "string", group: "summary", options: { list: SERVICE_ICONS, layout: "radio" }, initialValue: "search" }),
-    defineField({ name: "order", type: "number", group: "summary", description: "Lower numbers come first.", initialValue: 10, validation: (rule) => rule.integer().min(0) }),
+    orderRankField({ type: "service" }),
 
     defineField({ name: "headline", type: "string", group: "page", description: "The question or statement that opens the page.", validation: (rule) => rule.max(120) }),
     defineField({ name: "intro", type: "portableText", group: "page" }),
@@ -72,9 +74,8 @@ export const serviceType = defineType({
     defineField({ name: "ctaLabel", title: "Button label", type: "string", group: "page", initialValue: "Book a discovery call", validation: (rule) => rule.required().max(40) }),
     defineField({ name: "seo", type: "seo", group: "seo" }),
   ],
-  orderings: [{ title: "Display order", name: "orderAsc", by: [{ field: "order", direction: "asc" }] }],
+  orderings: [orderRankOrdering],
   preview: {
-    select: { title: "title", subtitle: "teaser", order: "order" },
-    prepare: ({ title, subtitle, order }) => ({ title: `${order ?? "–"}. ${title}`, subtitle }),
+    select: { title: "title", subtitle: "teaser" },
   },
 });

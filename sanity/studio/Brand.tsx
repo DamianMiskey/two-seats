@@ -1,25 +1,38 @@
-import type { LayoutProps, LogoProps } from "sanity";
+import { Card, Flex, Text } from "@sanity/ui";
+import type { LayoutProps, LogoProps, NavbarProps, ToolMenuProps } from "sanity";
+import { ColorSchemeToggle } from "./ColorSchemeToggle";
 
-// The Two Seats mark, drawn as SVG (the supplied logo is a CMYK JPEG on
-// white, which would show as a white box on the dark top bar): an emerald
-// square with the arc and two "seats".
+// The real Two Seats mark, cropped from the logo (static/two-seats-mark.png,
+// served by the Studio at /static/). A square crop of the green tile, so it
+// works on light and dark backgrounds.
 export function TwoSeatsMark({ size = 24 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 40 40" aria-hidden="true">
-      <rect width="40" height="40" rx="6" fill="#47b175" />
-      <path d="M14 6 A18 18 0 0 1 14 34" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" />
-      <circle cx="14" cy="6" r="3" fill="#fff" />
-      <circle cx="14" cy="34" r="3" fill="#fff" />
-    </svg>
-  );
+  return <img src="/static/two-seats-mark.png" width={size} height={size} alt="" style={{ borderRadius: Math.round(size / 6), display: "block" }} />;
 }
 
 export function Logo({ title }: LogoProps) {
   return (
-    <span style={{ display: "inline-flex", alignItems: "center", gap: 8, fontWeight: 700, letterSpacing: "0.02em" }}>
-      <TwoSeatsMark size={22} />
-      {title}
-    </span>
+    <Flex align="center" gap={2}>
+      <TwoSeatsMark size={24} />
+      <Text weight="semibold" size={1} style={{ letterSpacing: "0.12em", textTransform: "uppercase" }}>
+        {title}
+      </Text>
+    </Flex>
+  );
+}
+
+// The top bar in Two Seats ink, in light and dark mode alike.
+export function Navbar(props: NavbarProps) {
+  return <Card scheme="dark">{props.renderDefault(props)}</Card>;
+}
+
+// The tool tabs (Home, Structure, Presentation…) plus the light/dark toggle.
+export function ToolMenu(props: ToolMenuProps) {
+  if (props.context !== "topbar") return props.renderDefault(props);
+  return (
+    <Flex align="center" gap={3}>
+      {props.renderDefault(props)}
+      <ColorSchemeToggle />
+    </Flex>
   );
 }
 

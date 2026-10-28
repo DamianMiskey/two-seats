@@ -70,7 +70,7 @@ export type CarePlan = {
   pricePeriod?: "month" | "once";
   featured?: boolean;
   badge?: string;
-  order?: number;
+  orderRank?: string;
 };
 
 export type Service = {
@@ -86,7 +86,7 @@ export type Service = {
   teaser?: string;
   aboutBlurb?: string;
   icon?: "search" | "pulse" | "shield" | "trend";
-  order?: number;
+  orderRank?: string;
   headline?: string;
   intro?: PortableText;
   whatsIncluded?: Array<string>;
@@ -595,7 +595,7 @@ export type HOME_QUERY_RESULT =
 
 // Source: lib/sanity/queries.ts
 // Variable: SERVICES_QUERY
-// Query: *[_type == "service" && defined(slug.current)] | order(order asc){  _id, title, "slug": slug.current, shortLabel, kicker, teaser, aboutBlurb, icon,  headline, intro, whatsIncluded, secondaryList{ title, items }, showCarePlans,  closing{ heading, body }, ctaLabel}
+// Query: *[_type == "service" && defined(slug.current)] | order(orderRank asc){  _id, title, "slug": slug.current, shortLabel, kicker, teaser, aboutBlurb, icon,  headline, intro, whatsIncluded, secondaryList{ title, items }, showCarePlans,  closing{ heading, body }, ctaLabel}
 export type SERVICES_QUERY_RESULT = Array<{
   _id: string;
   title: string | null;
@@ -622,7 +622,7 @@ export type SERVICES_QUERY_RESULT = Array<{
 
 // Source: lib/sanity/queries.ts
 // Variable: CARE_PLANS_QUERY
-// Query: *[_type == "carePlan"] | order(order asc){  _id, name, description, priceFrom, pricePeriod, featured, badge}
+// Query: *[_type == "carePlan"] | order(orderRank asc){  _id, name, description, priceFrom, pricePeriod, featured, badge}
 export type CARE_PLANS_QUERY_RESULT = Array<{
   _id: string;
   name: string | null;
@@ -905,8 +905,8 @@ declare global {
   interface SanityQueries {
     '*[_id == "siteSettings"][0]{\n  siteName, tagline, contactEmail,\n  navigation[]{ label, href },\n  headerCta{ label, href },\n  seo{ title, description, "image": image.asset->url }\n}': SETTINGS_QUERY_RESULT;
     '*[_id == "homePage"][0]{\n  hero{ eyebrow, title, highlightPhrase, lead, primaryCta{ label, href }, secondaryCta{ label, href }, showServiceTags },\n  freeCheck{ enabled, heading{ eyebrow, title, subtitle }, note },\n  servicesSection{ eyebrow, title, subtitle },\n  carePlansSection{ enabled, heading{ eyebrow, title, subtitle } },\n  approach{ heading{ eyebrow, title, subtitle }, steps[]{ _key, title, description } },\n  contactSection{ heading{ eyebrow, title, subtitle }, cta{ label, href } },\n  seo{ title, description, "image": image.asset->url }\n}': HOME_QUERY_RESULT;
-    '*[_type == "service" && defined(slug.current)] | order(order asc){\n  _id, title, "slug": slug.current, shortLabel, kicker, teaser, aboutBlurb, icon,\n  headline, intro, whatsIncluded, secondaryList{ title, items }, showCarePlans,\n  closing{ heading, body }, ctaLabel\n}': SERVICES_QUERY_RESULT;
-    '*[_type == "carePlan"] | order(order asc){\n  _id, name, description, priceFrom, pricePeriod, featured, badge\n}': CARE_PLANS_QUERY_RESULT;
+    '*[_type == "service" && defined(slug.current)] | order(orderRank asc){\n  _id, title, "slug": slug.current, shortLabel, kicker, teaser, aboutBlurb, icon,\n  headline, intro, whatsIncluded, secondaryList{ title, items }, showCarePlans,\n  closing{ heading, body }, ctaLabel\n}': SERVICES_QUERY_RESULT;
+    '*[_type == "carePlan"] | order(orderRank asc){\n  _id, name, description, priceFrom, pricePeriod, featured, badge\n}': CARE_PLANS_QUERY_RESULT;
     '*[_id == "servicesPage"][0]{\n  hero{ eyebrow, title, lead }, seo{ title, description, "image": image.asset->url }\n}': SERVICES_PAGE_QUERY_RESULT;
     '*[_id == "aboutPage"][0]{\n  hero{ eyebrow, title, lead },\n  intro,\n  story{ heading{ eyebrow, title, subtitle }, body },\n  servicesSection{ eyebrow, title, subtitle },\n  principles{ heading{ eyebrow, title, subtitle }, items, closing },\n  "founders": founders[]->{ _id, name, role, bio, photo{ asset, hotspot, crop, alt } },\n  seo{ title, description, "image": image.asset->url }\n}': ABOUT_QUERY_RESULT;
     '*[_id == "contactPage"][0]{\n  hero{ eyebrow, title, lead },\n  intro,\n  interests{ heading{ eyebrow, title, subtitle }, options },\n  nextSteps{ heading{ eyebrow, title, subtitle }, steps },\n  seo{ title, description, "image": image.asset->url }\n}': CONTACT_QUERY_RESULT;

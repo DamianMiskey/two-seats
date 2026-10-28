@@ -8,6 +8,7 @@
  * It runs with your own Sanity login (`npx sanity login` first), via
  * `sanity exec --with-user-token`, so no API token is created or stored.
  */
+import { LexoRank } from "lexorank";
 import { getCliClient } from "sanity/cli";
 import * as content from "../lib/content/fallback";
 
@@ -24,6 +25,13 @@ const heading = (h: { eyebrow?: string | null; title?: string | null; subtitle?:
   h ? { _type: "sectionHeading", eyebrow: h.eyebrow ?? undefined, title: h.title ?? undefined, subtitle: h.subtitle ?? undefined } : undefined;
 const hero = (h: { eyebrow?: string | null; title?: string | null; lead?: string | null } | null | undefined) =>
   h ? { _type: "pageHero", eyebrow: h.eyebrow ?? undefined, title: h.title ?? undefined, lead: h.lead ?? undefined } : undefined;
+
+// Drag-and-drop order (the orderable list plugin stores LexoRank strings).
+const ranks = (n: number) => {
+  let r = LexoRank.min().genNext();
+  return Array.from({ length: n }, () => (r = r.genNext()).toString());
+};
+const serviceRanks = ranks(content.services.length), planRanks = ranks(content.carePlans.length);
 
 const s = content.settings, h = content.home;
 type Doc = { _id: string; _type: string } & Record<string, unknown>;
@@ -62,14 +70,14 @@ const docs: Doc[] = [
   ...content.services.map((sv, i) => ({
     _id: sv._id, _type: "service",
     title: sv.title, slug: { _type: "slug", current: sv.slug }, shortLabel: sv.shortLabel, kicker: sv.kicker,
-    teaser: sv.teaser, aboutBlurb: sv.aboutBlurb ?? undefined, icon: sv.icon, order: (i + 1) * 10,
+    teaser: sv.teaser, aboutBlurb: sv.aboutBlurb ?? undefined, icon: sv.icon, orderRank: serviceRanks[i],
     headline: sv.headline, intro: sv.intro, whatsIncluded: sv.whatsIncluded,
     secondaryList: sv.secondaryList ?? undefined, showCarePlans: sv.showCarePlans,
     closing: { heading: sv.closing?.heading ?? undefined, body: sv.closing?.body }, ctaLabel: sv.ctaLabel,
   })),
   ...content.carePlans.map((cp, i) => ({
     _id: cp._id, _type: "carePlan", name: cp.name, description: cp.description,
-    pricePeriod: cp.pricePeriod, featured: cp.featured, badge: cp.badge ?? undefined, order: (i + 1) * 10,
+    pricePeriod: cp.pricePeriod, featured: cp.featured, badge: cp.badge ?? undefined, orderRank: planRanks[i],
   })),
 ];
 
@@ -78,6 +86,18 @@ for (const doc of docs) {
   if (replace) tx.createOrReplace(doc);
   else tx.createIfNotExists(doc);
 }
+// Documents seeded before drag-and-drop ordering existed have a numeric
+// "order" but no orderRank: give them ranks in their current order, without
+// touching anything else.
+for (const type of ["service", "carePlan"]) {
+  const missing = await client.fetch<{ _id: string }[]>(
+    `*[_type == $type && !defined(orderRank) && !(_id in path("drafts.**"))] | order(order asc){ _id }`,
+    { type },
+  );
+  const r = ranks(missing.length + 1);
+  missing.forEach((d, i) => tx.patch(d._id, (p) => p.setIfMissing({ orderRank: r[i] })));
+}
+
 const result = await tx.commit();
 console.log(`${replace ? "Wrote" : "Created (if missing)"} ${docs.length} documents in "${client.config().dataset}" (${result.results.length} changes).`);
 console.log("Add your team members, prices and photos in the Studio: npm run studio");
