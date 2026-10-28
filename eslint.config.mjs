@@ -9,6 +9,8 @@ const eslintConfig = defineConfig([
   globalIgnores([
     // Default ignores of eslint-config-next:
     ".next/**",
+    // Vendored, minified three.js for the /concept preview page.
+    "public/concept/**",
     "out/**",
     "build/**",
     "next-env.d.ts",

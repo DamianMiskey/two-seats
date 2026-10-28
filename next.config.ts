@@ -29,6 +29,13 @@ const cspHeader = `
   .replace(/\s{2,}/g, " ")
   .trim();
 
+// The /concept preview page (public/concept.html, a static design concept)
+// loads Montserrat from Google Fonts, so it gets its own policy: the same as
+// above plus Google Fonts. Scripts stay same-origin (three.js is self-hosted).
+const conceptCspHeader = cspHeader
+  .replace("style-src 'self' 'unsafe-inline';", "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;")
+  .replace("font-src 'self' data:;", "font-src 'self' data: https://fonts.gstatic.com;");
+
 const baseSecurityHeaders = [
   { key: "X-DNS-Prefetch-Control", value: "on" },
   ...(isDev
@@ -53,6 +60,10 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: __dirname,
   },
+  // /concept serves the static design concept in public/concept.html.
+  async rewrites() {
+    return [{ source: "/concept", destination: "/concept.html" }];
+  },
   async headers() {
     return [
       {
@@ -60,8 +71,12 @@ const nextConfig: NextConfig = {
         headers: baseSecurityHeaders,
       },
       {
-        source: "/((?!studio).*)",
+        source: "/((?!studio|concept).*)",
         headers: [{ key: "Content-Security-Policy", value: cspHeader }],
+      },
+      {
+        source: "/concept(.*)",
+        headers: [{ key: "Content-Security-Policy", value: conceptCspHeader }],
       },
     ];
   },
