@@ -4,7 +4,7 @@ import { useState, type FormEvent } from "react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 
-const interestOptions = [
+const defaultInterestOptions = [
   "Website Audit & Recommendation Packages",
   "Website Care & Security Packages",
   "Website Improvements & Enhancements",
@@ -17,9 +17,11 @@ const inputClasses =
 
 type ContactFormProps = {
   contactEmail: string;
+  options?: string[] | null;
 };
 
-export function ContactForm({ contactEmail }: ContactFormProps) {
+export function ContactForm({ contactEmail, options }: ContactFormProps) {
+  const interestOptions = options?.length ? options : defaultInterestOptions;
   const [name, setName] = useState("");
   const [business, setBusiness] = useState("");
   const [email, setEmail] = useState("");

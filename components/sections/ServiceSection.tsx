@@ -5,32 +5,31 @@ import { Button } from "@/components/ui/Button";
 import { Checklist } from "@/components/ui/Checklist";
 import { Reveal } from "@/components/motion/Reveal";
 import { RevealGroup } from "@/components/motion/RevealGroup";
-import type { Service } from "@/lib/content/services";
+import { RichText } from "@/components/ui/RichText";
+import type { CarePlanContent, ServiceContent } from "@/lib/sanity/types";
 
 type ServiceSectionProps = {
-  service: Service;
+  service: ServiceContent;
+  carePlans: CarePlanContent[];
   tone: "white" | "mist";
 };
 
-export function ServiceSection({ service, tone }: ServiceSectionProps) {
+export function ServiceSection({ service, carePlans, tone }: ServiceSectionProps) {
+  const tiers = service.showCarePlans ? carePlans : [];
   const closingBg = tone === "white" ? "bg-mist" : "bg-white";
 
   return (
-    <Section id={service.id} className={tone === "white" ? "bg-white" : "bg-mist"}>
+    <Section id={service.slug ?? undefined} className={tone === "white" ? "bg-white" : "bg-mist"}>
       <Reveal>
-        <SectionHeading eyebrow={service.kicker} title={service.title} />
+        <SectionHeading eyebrow={service.kicker ?? ""} title={service.title ?? ""} />
       </Reveal>
 
       <Reveal>
         <div className="mt-8 flex max-w-3xl flex-col gap-5">
-          {service.intro.map((paragraph) => (
-            <p
-              key={paragraph}
-              className="text-base leading-7 text-ink/70 sm:text-lg sm:leading-8"
-            >
-              {paragraph}
-            </p>
-          ))}
+          {service.headline ? (
+            <p className="text-lg font-semibold leading-8 text-ink sm:text-xl">{service.headline}</p>
+          ) : null}
+          <RichText value={service.intro} />
         </div>
       </Reveal>
 
@@ -42,7 +41,7 @@ export function ServiceSection({ service, tone }: ServiceSectionProps) {
             What&apos;s Included
           </h3>
           <div className="mt-5">
-            <Checklist items={service.whatsIncluded} />
+            <Checklist items={service.whatsIncluded ?? []} />
           </div>
         </Card>
 
@@ -52,21 +51,26 @@ export function ServiceSection({ service, tone }: ServiceSectionProps) {
               {service.secondaryList.title}
             </h3>
             <div className="mt-5">
-              <Checklist items={service.secondaryList.items} />
+              <Checklist items={service.secondaryList.items ?? []} />
             </div>
           </Card>
         ) : null}
       </RevealGroup>
 
-      {service.tiers ? (
+      {tiers.length ? (
         <RevealGroup className="mt-8 grid gap-6 sm:grid-cols-3">
-          {service.tiers.map((tier) => (
-            <Card key={tier.name} tone="light">
+          {tiers.map((tier) => (
+            <Card key={tier._id} tone="light">
               <span className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald">
                 {tier.name}
               </span>
               <p className="mt-3 text-base leading-7 text-ink/70">
                 {tier.description}
+              </p>
+              <p className="mt-4 text-sm font-semibold text-ink">
+                {tier.priceFrom
+                  ? `From R${tier.priceFrom.toLocaleString("en-ZA")}${tier.pricePeriod === "month" ? " / month" : ""}`
+                  : "Price on request"}
               </p>
             </Card>
           ))}
@@ -78,13 +82,13 @@ export function ServiceSection({ service, tone }: ServiceSectionProps) {
           className={`mt-12 flex flex-col items-start gap-6 rounded-[2rem] border border-ink/10 ${closingBg} p-8 sm:p-10 lg:flex-row lg:items-center lg:justify-between`}
         >
           <div className="max-w-2xl">
-            {service.closing.heading ? (
+            {service.closing?.heading ? (
               <p className="text-lg font-semibold text-ink sm:text-xl">
                 {service.closing.heading}
               </p>
             ) : null}
             <p className="mt-2 text-base leading-7 text-ink/70">
-              {service.closing.body}
+              {service.closing?.body}
             </p>
           </div>
           <Button href="/contact" variant="primary" className="shrink-0">

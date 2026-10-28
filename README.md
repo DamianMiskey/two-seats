@@ -6,7 +6,7 @@ The Two Seats marketing site — four pages (home, about, services, contact) cov
 
 - A real, multi-page site — no longer in "maintenance mode," and no longer a single scrolling homepage.
 - See `context/progress.md` for what's placeholder vs. production-ready, and `context/architecture.md` / `context/brand.md` before extending it.
-- Hero copy is currently served from a local fallback, not the live Sanity document — see `context/progress.md` for why and how to reconnect it before launch.
+- Content comes from Sanity (Live Content API, click-to-edit previews), with the current copy as a fallback. See `context/sanity.md`.
 
 ## Stack
 
@@ -43,16 +43,20 @@ npm run dev
 npm run build
 npm run start
 npm run lint
+npm run studio          # Sanity Studio at localhost:3333
+npm run studio:deploy   # publish the Studio
+npm run typegen         # regenerate sanity.types.ts
+npm run seed            # copy current copy into Sanity
 ```
 
 ## Project structure
 
 - app/page.tsx, app/about/, app/services/, app/contact/ — the four routes, each composing shared components (see `context/architecture.md`)
 - app/globals.css — brand color tokens, font wiring, global styles
-- app/studio/[[...tool]]/page.tsx — the embedded Sanity Studio route
+- Sanity Studio — hosted at https://twoseats.sanity.studio (`npm run studio` locally, `npm run studio:deploy` to publish)
 - components/ — nav, hero, sections, footer, GSAP motion primitives, shared UI primitives (see `context/architecture.md`)
-- lib/sanity/ — homepage hero content fetch + fallback copy
-- lib/content/ — static service content shared across the home/services/about pages
+- lib/sanity/ — GROQ queries (`defineQuery`) and content loaders with fallbacks
+- lib/content/ — the fallback copy (also used by `npm run seed`)
 - sanity/ — Sanity schema, config, and studio structure
 - next.config.ts — security headers (CSP, HSTS, etc.) — see `context/security.md`
 - context/ — living architecture/brand/progress docs, read this before extending the site

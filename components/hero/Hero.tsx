@@ -4,6 +4,7 @@ import { useRef } from "react";
 import Link from "next/link";
 import { useGSAP } from "@gsap/react";
 import { gsap, SplitText } from "@/components/motion/gsap";
+import { stegaClean } from "next-sanity";
 import { Button } from "@/components/ui/Button";
 import type { HomepageContent } from "@/lib/sanity/homepage-fallback";
 
@@ -16,7 +17,9 @@ function escapeRegExp(value: string) {
 }
 
 function renderTitleWithHighlight(title: string, highlightPhrase?: string) {
-  const phrase = highlightPhrase?.trim();
+  // stegaClean strips the invisible editing markers draft mode adds to text,
+  // so the phrase still matches the title while previewing.
+  const phrase = stegaClean(highlightPhrase)?.trim();
 
   if (!phrase) {
     return title;
@@ -160,11 +163,11 @@ export function Hero({ content }: Readonly<HeroProps>) {
         </p>
 
         <div data-hero-post className="flex flex-wrap gap-4">
-          <Button href={`mailto:${contactEmail}`} variant="primary">
-            Contact us
+          <Button href={content.primaryCta?.href ?? `mailto:${contactEmail}`} variant="primary">
+            {content.primaryCta?.label ?? "Contact us"}
           </Button>
-          <Button href="#contact" variant="outline-light">
-            Start a project
+          <Button href={content.secondaryCta?.href ?? "#contact"} variant="outline-light">
+            {content.secondaryCta?.label ?? "Start a project"}
           </Button>
         </div>
 

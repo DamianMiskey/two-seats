@@ -5,13 +5,26 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
 
-const links = [
+const defaultLinks = [
   { href: "/services", label: "Services" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
 ];
 
-export function Nav() {
+type NavLink = { label?: string | null; href?: string | null };
+
+export function Nav({
+  links: linksProp,
+  cta,
+}: {
+  links?: NavLink[] | null;
+  cta?: NavLink | null;
+} = {}) {
+  const links = (linksProp?.length ? linksProp : defaultLinks).filter(
+    (l): l is { label: string; href: string } => Boolean(l.label && l.href),
+  );
+  const ctaHref = cta?.href ?? "/contact";
+  const ctaLabel = cta?.label ?? "Let's talk";
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -50,8 +63,8 @@ export function Nav() {
               {link.label}
             </Link>
           ))}
-          <Button href="/contact" variant="primary" className="px-5 py-2.5">
-            Let&apos;s talk
+          <Button href={ctaHref} variant="primary" className="px-5 py-2.5">
+            {ctaLabel}
           </Button>
         </nav>
 
@@ -88,12 +101,12 @@ export function Nav() {
             </Link>
           ))}
           <Button
-            href="/contact"
+            href={ctaHref}
             variant="primary"
             className="mt-2"
             onClick={() => setOpen(false)}
           >
-            Let&apos;s talk
+            {ctaLabel}
           </Button>
         </nav>
       ) : null}

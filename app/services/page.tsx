@@ -1,30 +1,26 @@
-import type { Metadata } from "next";
 import { Nav } from "@/components/nav/Nav";
 import { Footer } from "@/components/footer/Footer";
 import { PageHero } from "@/components/ui/PageHero";
 import { ServiceSection } from "@/components/sections/ServiceSection";
-import { services } from "@/lib/content/services";
+import { getCarePlans, getServices, getServicesPage, getSettings, metadataFor } from "@/lib/sanity/content";
 
-export const metadata: Metadata = {
-  title: "Services | Two Seats",
-  description:
-    "Website audits, care & security plans, cybersecurity and website improvements for small and medium-sized businesses.",
-};
+export async function generateMetadata() {
+  const page = await getServicesPage({ stega: false });
+  return metadataFor(page.seo);
+}
 
-export default function ServicesPage() {
+export default async function ServicesPage() {
+  const [settings, page, services, carePlans] = await Promise.all([getSettings(), getServicesPage(), getServices(), getCarePlans()]);
+
   return (
     <main>
-      <Nav />
-      <PageHero
-        eyebrow="What we do"
-        title="Practical website services, sized to your business."
-        description="From a one-off health check to ongoing care and targeted improvements — clear advice and practical support, without the cost and commitment of a full-service agency."
-      >
+      <Nav links={settings.navigation} cta={settings.headerCta} />
+      <PageHero eyebrow={page.hero?.eyebrow ?? ""} title={page.hero?.title ?? ""} description={page.hero?.lead ?? undefined}>
         <div className="flex flex-wrap gap-3 pt-2">
           {services.map((service) => (
             <a
-              key={service.id}
-              href={`#${service.id}`}
+              key={service._id}
+              href={`#${service.slug}`}
               className="rounded-full border border-white/25 bg-white/5 px-4 py-2 text-sm font-semibold text-white/85 transition hover:border-white/40 hover:bg-white/10 hover:text-white"
             >
               {service.title}
@@ -34,13 +30,10 @@ export default function ServicesPage() {
       </PageHero>
 
       {services.map((service, index) => (
-        <ServiceSection
-          key={service.id}
-          service={service}
-          tone={index % 2 === 0 ? "white" : "mist"}
-        />
+        <ServiceSection key={service._id} service={service} carePlans={carePlans} tone={index % 2 === 0 ? "white" : "mist"} />
       ))}
-      <Footer />
+
+      <Footer links={settings.navigation} tagline={settings.tagline} />
     </main>
   );
 }

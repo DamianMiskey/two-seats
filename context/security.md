@@ -20,9 +20,9 @@ HSTS is the more dangerous of the two: browsers (Safari in particular — Chrome
 
 Both directives in `next.config.ts` are gated behind `const isDev = process.env.NODE_ENV === "development"` — keep that gating if this file is edited again.
 
-## Content-Security-Policy (all routes **except** `/studio`)
+## Content-Security-Policy (all routes)
 
-Applied via a second `headers()` entry matching `/((?!studio).*)`. Sanity Studio is excluded deliberately — it's a heavy client-side editor that needs `eval`, websockets, and inline styles to function, and locking it down is a separate, lower-priority effort from securing the public marketing site.
+Applied to every route. Sanity Studio used to be embedded at `/studio` with an exemption; it is now hosted by Sanity (see `sanity.md`), so the exemption is gone. `frame-ancestors` allows only this site and `https://twoseats.sanity.studio` (plus `http://localhost:3333` in dev), so the Studio's Presentation tool can show click-to-edit previews.
 
 The policy (see `next.config.ts` for the literal string): `default-src 'self'`, `script-src`/`style-src` allow `'unsafe-inline'` (and `'unsafe-eval'` only in dev), `img-src` allows `cdn.sanity.io` for future Sanity-hosted images, `connect-src` allows Sanity API domains and Vercel's analytics/speed-insights endpoints, `frame-ancestors 'self'` (site can't be iframed cross-origin), `object-src 'none'`.
 
@@ -39,3 +39,7 @@ npm run build && npm run start
 curl -sI http://localhost:3000/ | grep -i content-security-policy   # full CSP
 curl -sI http://localhost:3000/studio | grep -i content-security-policy  # should be absent
 ```
+
+## Sanity
+
+See `sanity.md` → "Security setup": two-factor login, roles, CORS origins, the server-only Viewer token for draft previews (`SANITY_API_READ_TOKEN`, Sensitive, never `NEXT_PUBLIC_`), link validation in the schema, and never storing personal data in the public dataset. Draft mode is only enabled by Sanity-signed preview links (`/api/draft-mode/enable`).

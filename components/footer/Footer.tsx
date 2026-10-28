@@ -2,13 +2,18 @@ import Image from "next/image";
 import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 
-const links = [
+const defaultLinks = [
   { href: "/services", label: "Services" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
 ];
 
-export function Footer() {
+type FooterLink = { label?: string | null; href?: string | null };
+
+export function Footer({ links: linksProp, tagline }: { links?: FooterLink[] | null; tagline?: string | null } = {}) {
+  const links = (linksProp?.length ? linksProp : defaultLinks).filter(
+    (l): l is { label: string; href: string } => Boolean(l.label && l.href),
+  );
   return (
     <footer className="bg-ink text-white">
       <Container className="flex flex-col gap-10 py-16">
@@ -38,7 +43,7 @@ export function Footer() {
 
         <div className="flex flex-col items-start justify-between gap-4 border-t border-white/10 pt-8 sm:flex-row sm:items-center">
           <p className="text-sm uppercase tracking-[0.3em] text-white/50">
-            Connect | Create | Collaborate
+            {tagline ?? "Connect | Create | Collaborate"}
           </p>
           <p className="text-sm text-white/50">
             &copy; {new Date().getFullYear()} Two Seats. All rights reserved.

@@ -2,9 +2,8 @@ import type { NextConfig } from "next";
 
 const isDev = process.env.NODE_ENV === "development";
 
-// Sanity Studio (/studio) is a heavy client-side app that needs eval,
-// websockets, and inline styles to run — it gets the baseline headers
-// only. The CSP below applies to every other route.
+// The CSP below applies to every route. (Sanity Studio used to live at
+// /studio with its own exemption; it's now hosted by Sanity instead.)
 //
 // `upgrade-insecure-requests` and HSTS are both PRODUCTION-ONLY: the local
 // dev server only speaks plain HTTP, so either of these sent in dev makes
@@ -13,6 +12,14 @@ const isDev = process.env.NODE_ENV === "development";
 // `max-age` duration — once sent, the browser keeps forcing HTTPS for that
 // host even after this header is removed, until the cached policy expires
 // or is manually cleared.
+// Pages may only be framed by this site and the Two Seats Studio, whose
+// Presentation tool shows the site in a frame for click-to-edit previews.
+const frameAncestors = [
+  "'self'",
+  "https://twoseats.sanity.studio",
+  ...(isDev ? ["http://localhost:3333"] : []),
+].join(" ");
+
 const cspHeader = `
   default-src 'self';
   script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""};
@@ -23,7 +30,7 @@ const cspHeader = `
   object-src 'none';
   base-uri 'self';
   form-action 'self';
-  frame-ancestors 'self';
+  frame-ancestors ${frameAncestors};
   ${isDev ? "" : "upgrade-insecure-requests;"}
 `
   .replace(/\s{2,}/g, " ")
@@ -50,6 +57,10 @@ const baseSecurityHeaders = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  // Team photos and other images uploaded to Sanity.
+  images: {
+    remotePatterns: [{ protocol: "https", hostname: "cdn.sanity.io", pathname: "/images/**" }],
+  },
   turbopack: {
     root: __dirname,
   },
@@ -60,7 +71,7 @@ const nextConfig: NextConfig = {
         headers: baseSecurityHeaders,
       },
       {
-        source: "/((?!studio).*)",
+        source: "/:path*",
         headers: [{ key: "Content-Security-Policy", value: cspHeader }],
       },
     ];

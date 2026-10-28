@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Montserrat } from "next/font/google";
+import { draftMode } from "next/headers";
+import { VisualEditing } from "next-sanity/visual-editing";
+import { SanityLive } from "@/sanity/lib/live";
+import { DisableDraftMode } from "@/components/ui/DisableDraftMode";
 import "./globals.css";
 
 const montserrat = Montserrat({
@@ -29,7 +33,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -38,6 +42,15 @@ export default function RootLayout({
     <html lang="en" className={`${montserrat.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
         {children}
+        {/* Keeps sanityFetch content fresh: re-renders within seconds of a publish. */}
+        <SanityLive />
+        {(await draftMode()).isEnabled ? (
+          <>
+            {/* Click-to-edit overlays, only while an editor previews drafts. */}
+            <VisualEditing />
+            <DisableDraftMode />
+          </>
+        ) : null}
         <Analytics />
         <SpeedInsights />
       </body>
