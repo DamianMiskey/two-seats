@@ -13,7 +13,7 @@ export function Logo({ title }: LogoProps) {
   return (
     <Flex align="center" gap={2}>
       <TwoSeatsMark size={24} />
-      <Text weight="semibold" size={1} style={{ letterSpacing: "0.12em", textTransform: "uppercase" }}>
+      <Text className="two-seats-wordmark" weight="semibold" size={1} style={{ letterSpacing: "0.12em", textTransform: "uppercase" }}>
         {title}
       </Text>
     </Flex>
@@ -40,7 +40,8 @@ export function ToolMenu(props: ToolMenuProps) {
 export function Layout(props: LayoutProps) {
   return (
     <>
-      <style>{`@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap");`}</style>
+      <style>{`@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap");
+      [data-ui="Navbar"] [data-ui="Text"], .two-seats-wordmark { font-family: "Montserrat", "Helvetica Neue", Arial, sans-serif; }`}</style>
       {props.renderDefault(props)}
     </>
   );

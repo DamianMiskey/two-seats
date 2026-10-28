@@ -27,7 +27,7 @@ The Studio needs `SANITY_STUDIO_PROJECT_ID` and `SANITY_STUDIO_DATASET` in `.env
 - **TypeGen + `defineQuery`** (`lib/sanity/queries.ts`): typed query results.
 - **Structure Builder** (`sanity/structure.ts`): pages grouped, singletons opened directly.
 - **Validation**: required fields, lengths, the highlighted hero word must be in the title, alt text required on photos, links limited to safe schemes (`sanity/lib/validation.ts`).
-- **Brand** (`sanity/studio/`): Two Seats colours (`theme.ts`), Montserrat, the real logo mark (`static/two-seats-mark.png`, cropped from the logo) and an ink top bar.
+- **Brand** (`sanity/studio/`): Montserrat in the top bar, the real logo mark (`static/two-seats-mark.png`, cropped from the logo) and an ink top bar.
 - **Light / dark toggle** in the top bar (`ColorSchemeToggle.tsx`), saved per browser.
 - **Home dashboard** (`Welcome.tsx`): quick actions, links to the live site and preview, content counts, a "to finish" list (missing photos, prices, Google descriptions) and recently edited documents.
 - **Drag-and-drop ordering** for services and care plans (`@sanity/orderable-document-list`, stored in `orderRank`).
@@ -35,6 +35,8 @@ The Studio needs `SANITY_STUDIO_PROJECT_ID` and `SANITY_STUDIO_DATASET` in `.env
 - **View on site** in every document's action menu (`ViewOnSiteAction.tsx`; site address from `SANITY_STUDIO_SITE_URL`, default https://twoseats.co.za).
 
 `@sanity/ui` 4 and `@sanity/icons` 5 changed their imports: icons come from their own path (`@sanity/icons/Case`), `Tooltip` from `@sanity/ui/tooltip`, and spacing props are `gap` / `gridTemplateColumns` (not `space` / `columns`). The old forms still type-check as `never` but break the Studio build, so run `npx sanity build` after Studio changes.
+
+Don't use `buildLegacyTheme` for brand colours: a legacy theme locks the Studio to light mode and removes the Appearance option and the light/dark toggle. Brand colours need Sanity's newer theme system instead.
 
 ## Security setup (done in sanity.io/manage by an administrator)
 

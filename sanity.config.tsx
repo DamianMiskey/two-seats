@@ -15,7 +15,6 @@ import { structure } from "./sanity/structure";
 import { Layout, Logo, Navbar, ToolMenu, TwoSeatsMark } from "./sanity/studio/Brand";
 import { ViewOnSiteAction } from "./sanity/studio/ViewOnSiteAction";
 import { welcomeTool } from "./sanity/studio/Welcome";
-import { twoSeatsTheme } from "./sanity/studio/theme";
 
 // Where the Presentation tool loads the site from. Set
 // SANITY_STUDIO_PREVIEW_ORIGIN to the live or preview address when deploying.
@@ -24,8 +23,9 @@ const previewOrigin = process.env.SANITY_STUDIO_PREVIEW_ORIGIN || "http://localh
 export default defineConfig({
   name: "two-seats",
   title: "Two Seats",
-  // Brand colours, font and logo (see sanity/studio/).
-  theme: twoSeatsTheme,
+  // Brand: logo, ink top bar and font (see sanity/studio/). No custom colour
+  // theme: Sanity's legacy theme option locks the Studio to light mode and
+  // removes the light/dark choice, so it isn't used.
   icon: () => <TwoSeatsMark size={26} />,
   studio: { components: { logo: Logo, layout: Layout, navbar: Navbar, toolMenu: ToolMenu } },
   projectId,
