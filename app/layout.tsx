@@ -6,6 +6,8 @@ import { draftMode } from "next/headers";
 import { VisualEditing } from "next-sanity/visual-editing";
 import { SanityLive } from "@/sanity/lib/live";
 import { DisableDraftMode } from "@/components/ui/DisableDraftMode";
+import { Observability } from "@/components/Observability";
+import { rumTelemetry } from "@/lib/telemetry-config";
 import "./globals.css";
 
 const montserrat = Montserrat({
@@ -33,6 +35,9 @@ export const metadata: Metadata = {
   },
 };
 
+// Coralogix RUM settings, or null (always null in production).
+const rum = rumTelemetry();
+
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -53,6 +58,7 @@ export default async function RootLayout({
         ) : null}
         <Analytics />
         <SpeedInsights />
+        {rum ? <Observability publicKey={rum.publicKey} domain={rum.domain} environment={rum.environment} version={rum.version} /> : null}
       </body>
     </html>
   );

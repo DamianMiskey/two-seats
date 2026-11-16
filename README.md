@@ -81,6 +81,30 @@ Once the app is deployed, your main site will run normally and the Studio will b
 https://your-domain.com/studio
 ```
 
+## Observability (Coralogix, test setup)
+
+Traces, logs and browser RUM go to a **test** Coralogix account (team `tech`, domain `cx498.coralogix.com`, region US2). It's **off in production**: only preview deployments and local dev send data, and only once the keys below are set. With no keys, the site behaves exactly as before.
+
+| Variable | Where | What |
+|---|---|---|
+| `CX_DOMAIN` | Preview, Development | `cx498.coralogix.com` |
+| `CX_SEND_KEY` | Preview, Development (sensitive) | Coralogix → Settings → API Keys → Send-Your-Data key |
+| `NEXT_PUBLIC_CX_RUM_KEY` | Preview, Development | Coralogix → Data Flow → Integrations → RUM: the public key |
+| `NEXT_PUBLIC_CX_RUM_DOMAIN` | optional | RUM region, defaults to `US2` |
+| `CX_OTLP_ENDPOINT` | optional | Overrides `https://ingress.<CX_DOMAIN>` |
+
+What's where:
+
+- `instrumentation.ts` registers OpenTelemetry (`@vercel/otel`) and exports traces and logs over OTLP/HTTP. Next.js adds spans for requests, renders and fetches.
+- `lib/observe.ts` has `withSpan()` and `log()` for our own spans and structured logs. `lib/sanity/content.ts` wraps every query in a `sanity.query <name>` span with `sanity.fallback`, `sanity.draft_mode` and `sanity.result.count`.
+- `components/Observability.tsx` is the browser RUM: Web Vitals, errors and clicks, plus the custom events `cta_click` and `contact_submit` (never form contents) and the `hero_intro_ms` measurement. No session recording, no IP collection.
+- `lib/telemetry-config.ts` decides on/off. `next.config.ts` adds the RUM ingress to the CSP only when RUM is on.
+- `app/api/debug` (404 in production) has `?kind=ok|error|slow&ms=1500|sanity|log` for making test data.
+- `npm run traffic -- <preview-url> [rounds]` sends a mix of page views, slow requests and errors. Use `VERCEL_BYPASS=<secret>` if the preview is protected.
+- `observability/coralogix/` holds the dashboard and alert definitions.
+
+The pages are static, so their Sanity queries run at build time and when content is republished, not on each visit. Per-visit server work shows up on `/api/*`, and visitor experience shows up in RUM.
+
 ## Contact
 
 For questions or updates, reach out at info@twoseats.co.za

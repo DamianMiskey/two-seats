@@ -84,7 +84,14 @@ export function Hero({ content }: Readonly<HeroProps>) {
             ? SplitText.create(headingRef.current, { type: "words" })
             : null;
 
-          const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+          // When the intro finishes, tell the RUM component (components/Observability.tsx)
+          // how long after page load it took. Nothing listens unless RUM is on.
+          const tl = gsap.timeline({
+            defaults: { ease: "power3.out" },
+            onComplete: () => {
+              window.dispatchEvent(new CustomEvent("twoseats:intro-done", { detail: { ms: Math.round(performance.now()) } }));
+            },
+          });
 
           tl.fromTo(
             glow,

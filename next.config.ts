@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { rumTelemetry } from "./lib/telemetry-config";
 
 const isDev = process.env.NODE_ENV === "development";
 
@@ -20,13 +21,18 @@ const frameAncestors = [
   ...(isDev ? ["http://localhost:3333"] : []),
 ].join(" ");
 
+// Coralogix browser RUM sends to its own ingress host. Only allowed when RUM
+// is switched on, which is never in production, so production's CSP is unchanged.
+const rum = rumTelemetry();
+const rumConnect = rum ? ` ${rum.ingress}` : "";
+
 const cspHeader = `
   default-src 'self';
   script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""};
   style-src 'self' 'unsafe-inline';
   img-src 'self' data: https://cdn.sanity.io;
   font-src 'self' data:;
-  connect-src 'self' https://*.sanity.io https://vitals.vercel-insights.com https://va.vercel-scripts.com;
+  connect-src 'self' https://*.sanity.io https://vitals.vercel-insights.com https://va.vercel-scripts.com${rumConnect};
   object-src 'none';
   base-uri 'self';
   form-action 'self';
