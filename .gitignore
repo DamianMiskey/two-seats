@@ -44,3 +44,8 @@ next-env.d.ts
 types/routes.d.ts
 types/validator.ts
 types/cache-life.d.ts
+
+# Coralogix CLI agent skills (local tooling, installed by `cx init --local-skills`)
+.claude/skills/
+.agents/
+skills-lock.json
